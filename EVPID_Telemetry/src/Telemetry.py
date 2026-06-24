@@ -1,1 +1,1 @@
-import serial
+print ("Telemetry module loaded successfully.")
