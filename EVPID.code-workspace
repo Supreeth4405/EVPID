@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "EVPID_Hardware",
+			"path": "EVPID_Hardware"
+		},
+		{
+			"name": "EVPID_Telemetry",
+			"path": "EVPID_Telemetry"
+		}
+	],
+	"settings": {}
+}
