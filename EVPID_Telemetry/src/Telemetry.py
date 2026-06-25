@@ -1,221 +1,85 @@
-import serial
 import dearpygui.dearpygui as telemetry
+from DAQ import DAQ
+import Dashboard
 
-data = serial.Serial("COM5", 9600)
-
-
-dists = []
-errors = []
-angles = []
-times = []
-P_Values = []
-I_Values = []
-D_Values = []
-PID_Values = []
-
+data = DAQ("COM5", 9600)
 
 telemetry.create_context()
 
-with telemetry.window(label="EVPID_Telemetry"):
+with telemetry.window(label="EVPID_Telemetry", no_title_bar=True):
 
     with telemetry.group(horizontal=True):
 
-        with telemetry.plot(width=443, height=223):
-            telemetry.add_plot_legend()
-            telemetry.add_plot_axis(telemetry.mvXAxis, tag="DTime", no_tick_labels=True)
-            telemetry.add_plot_axis(telemetry.mvYAxis, label="DISTANCE", tag="D")
-            telemetry.add_line_series(times, dists, parent="D", tag="Distance")
-
-        with telemetry.plot(width=443, height=223):
-            telemetry.add_plot_legend()
-            telemetry.add_plot_axis(telemetry.mvXAxis, tag="PTime", no_tick_labels=True)
-            telemetry.add_plot_axis(telemetry.mvYAxis, label="PROPOTIONAL", tag="P")
-            telemetry.add_line_series(times, P_Values, parent="P", tag="Pro")
-
-        with telemetry.plot(width=443, height=223):
-            telemetry.add_plot_legend()
-            telemetry.add_plot_axis(telemetry.mvXAxis, tag="PIDTime", no_tick_labels=True)
-            telemetry.add_plot_axis(telemetry.mvYAxis, label="PID", tag="PID")
-            telemetry.add_line_series(times, PID_Values, parent="PID", tag="pid")
+        Dashboard.Plot_Graph(443, 248.6, "DISTANCE", data.times, data.dists, "DTime", "D", "Distance")
+        Dashboard.Plot_Graph(443, 248.6, "PROPOTIONAL", data.times, data.P_Values, "PTime", "P", "Pro")
+        Dashboard.Plot_Graph(443, 248.6, "PID", data.times, data.PID_Values, "PIDTime", "PID", "pid")
     
     with telemetry.group(horizontal=True):
-        with telemetry.plot(width=443, height=223):
-            telemetry.add_plot_legend()
-            telemetry.add_plot_axis(telemetry.mvXAxis, tag="ETime", no_tick_labels=True)
-            telemetry.add_plot_axis(telemetry.mvYAxis, label="ERROR", tag="E")
-            telemetry.add_line_series(times, errors, parent="E", tag="Error")
 
-        with telemetry.plot(width=443, height=223):
-            telemetry.add_plot_legend()
-            telemetry.add_plot_axis(telemetry.mvXAxis, tag="ITime", no_tick_labels=True)
-            telemetry.add_plot_axis(telemetry.mvYAxis, label="INTEGRAL", tag="I")
-            telemetry.add_line_series(times, I_Values, parent="I", tag="Int")
-
-        with telemetry.child_window(width=443, height=223):
-
-            with telemetry.group(horizontal=True):
-
-                with telemetry.child_window(width=137, height=101.5):
-                    telemetry.add_text("Distance")
-                    telemetry.add_spacer(height=10)
-                    telemetry.add_text("0.00 cm", tag="DistanceV")
-
-                with telemetry.child_window(width=137, height=101.5):
-                    telemetry.add_text("Error")
-                    telemetry.add_spacer(height=10)
-                    telemetry.add_text("0.00", tag="ErrorV")
-
-                with telemetry.child_window(width=137, height=101.5):
-                    telemetry.add_text("Servo_Angle")
-                    telemetry.add_spacer(height=10)
-                    telemetry.add_text("65.0", tag="AngleV")
-
-            with telemetry.group(horizontal=True):
-
-                with telemetry.child_window(width=101.5, height=101.5):
-                    telemetry.add_text("P_Term")
-                    telemetry.add_spacer(height=10)
-                    telemetry.add_text("0.0", tag="PV")
-
-                with telemetry.child_window(width=101.5, height=101.5):
-                    telemetry.add_text("I_Term")
-                    telemetry.add_spacer(height=10)
-                    telemetry.add_text("0.0", tag="IV")
-
-                with telemetry.child_window(width=101.5, height=101.5):
-                    telemetry.add_text("D_Term")
-                    telemetry.add_spacer(height=10)
-                    telemetry.add_text("0.0", tag="DV")
-
-                with telemetry.child_window(width=101.5, height=101.5):
-                    telemetry.add_text("PID_Term")
-                    telemetry.add_spacer(height=10)
-                    telemetry.add_text("0.0", tag="PIDV")
+        Dashboard.Plot_Graph(443, 248.6, "ERROR", data.times, data.errors, "ETime", "E", "Error")
+        Dashboard.Plot_Graph(443, 248.6, "INTEGRAL", data.times, data.I_Values, "ITime", "I", "Int")
         
-    
-    with telemetry.group(horizontal=True):
-
-        with telemetry.plot(width=443, height=223):
-            telemetry.add_plot_legend()
-            telemetry.add_plot_axis(telemetry.mvXAxis, tag="STime", no_tick_labels=True)
-            telemetry.add_plot_axis(telemetry.mvYAxis, label="ANGLE", tag="S")
-            telemetry.add_line_series(times, angles, parent="S", tag="Servo")
-
-        with telemetry.plot(width=443, height=223):
-            telemetry.add_plot_legend()
-            telemetry.add_plot_axis(telemetry.mvXAxis, tag="dtTime", no_tick_labels=True)
-            telemetry.add_plot_axis(telemetry.mvYAxis, label="DERIVATIVE", tag="dt")
-            telemetry.add_line_series(times, D_Values, parent="dt", tag="Der")
-
-        with telemetry.child_window(width=443, height=223):
+        with telemetry.child_window(width=443, height=248.6):
 
             with telemetry.group(horizontal=True):
 
-                with telemetry.child_window(width=101.5, height=101.5):
-                    telemetry.add_text("Kp")
-                    telemetry.add_spacer(height=10)
-                    telemetry.add_text("0.0", tag="Kp")
+                Dashboard.Create_Child_window(137, 114.3, "Distance", 10, "DistanceV", "0.00cm")
+                Dashboard.Create_Child_window(137, 114.3, "Error", 10, "ErrorV", "0.00cm")
+                Dashboard.Create_Child_window(137, 114.3, "Servo_Angle", 10, "AngleV", "65.0")
 
-                with telemetry.child_window(width=101.5, height=101.5):
-                    telemetry.add_text("Ki")
-                    telemetry.add_spacer(height=10)
-                    telemetry.add_text("0.0", tag="Ki")
+            with telemetry.group(horizontal=True):
 
-                with telemetry.child_window(width=101.5, height=101.5):
-                    telemetry.add_text("Kd")
-                    telemetry.add_spacer(height=10)
-                    telemetry.add_text("0.0", tag="Kd")
+                Dashboard.Create_Child_window(101.5, 114.3, "P_Term", 10, "PV", "0.00")
+                Dashboard.Create_Child_window(101.5, 114.3, "I_Term", 10, "IV", "0.00")
+                Dashboard.Create_Child_window(101.5, 114.3, "D_Term", 10, "DV", "0.00")
+                Dashboard.Create_Child_window(101.5, 114.3, "PID_Term", 10, "PIDV", "0.00")
+    
+    with telemetry.group(horizontal=True):
 
-                with telemetry.child_window(width=101.5, height=101.5):
-                    telemetry.add_text("SetPoint")
-                    telemetry.add_spacer(height=10)
-                    telemetry.add_text("0.0", tag="SetPoint")
+        Dashboard.Plot_Graph(443, 248.6, "ANGLE", data.times, data.angles, "STime", "S", "Servo")
+        Dashboard.Plot_Graph(443, 248.6, "DERIVATIVE", data.times, data.D_Values, "dtTime", "dt", "Der")
 
+        with telemetry.child_window(width=443, height=248.6):
 
-telemetry.create_viewport(title="EVPID", width=1500, height=900)
+            with telemetry.group(horizontal=True):
 
+                Dashboard.Create_Child_window(101.5, 114.3, "Kp", 10, "Kp", "8.00")
+                Dashboard.Create_Child_window(101.5, 114.3, "Ki", 10, "Ki", "0.63")
+                Dashboard.Create_Child_window(101.5, 114.3, "Kd", 10, "Kd", "0.45")
+                Dashboard.Create_Child_window(101.5, 114.3, "SetPoint", 10, "SetPoint", "15.0")
+
+telemetry.create_viewport(title="EVPID", width=1500, height=1320)
 telemetry.setup_dearpygui()
 telemetry.show_viewport()
-
+telemetry.toggle_viewport_fullscreen()
 
 while telemetry.is_dearpygui_running():
 
-    values = data.readline().decode("UTF-8").strip().split(",")
+    data.get_values()
 
-    dist = float(values[0])
-    error = float(values[1])
-    servo = float(values[2])
-    time = float(values[3])
-    P = float(values[4])
-    I = float(values[5])
-    D = float(values[6])
-    PID = float(values[7])
-    Kp = float(values[8])
-    Ki = float(values[9])
-    Kd = float(values[10])
-    SetPoint = float(values[11])
+    Dashboard.Show_Limit_Graph("DTime", "D", "Distance", data.times, data.dists, 30, 0)
+    Dashboard.Show_Limit_Graph("ETime", "E", "Error", data.times, data.errors, 15, -15)
+    Dashboard.Show_Limit_Graph("STime", "S", "Servo", data.times, data.angles, 130, 0)
 
-    dists.append(dist)
-    errors.append(error)
-    angles.append(servo)
-    times.append(time)
-    P_Values.append(P)
-    I_Values.append(I)
-    D_Values.append(D)
-    PID_Values.append(PID)
-    
+    Dashboard.Show_Graph("PTime", "P", "Pro", data.times, data.P_Values)
+    Dashboard.Show_Graph("ITime", "I", "Int", data.times, data.I_Values)
+    Dashboard.Show_Graph("dtTime", "dt", "Der", data.times, data.D_Values)
+    Dashboard.Show_Graph("PIDTime", "PID", "pid", data.times, data.PID_Values)
 
-    dists = dists[-100:]
-    errors = errors[-100:]
-    angles = angles[-100:]
-    times = times[-100:]
-    P_Values = P_Values[-100:]
-    I_Values = I_Values[-100:]
-    D_Values = D_Values[-100:]
-    PID_Values = PID_Values[-100:]
+    telemetry.set_value("DistanceV", str(data.dist) + "cm")
+    telemetry.set_value("ErrorV", str(data.error) + "cm")
+    telemetry.set_value("AngleV", str(data.angle))
 
-    telemetry.set_value("Distance", [times, dists])
-    telemetry.fit_axis_data("DTime")
-    telemetry.set_axis_limits("D", 0, 30)
+    telemetry.set_value("PV", str(data.P))
+    telemetry.set_value("IV", str(data.I))
+    telemetry.set_value("DV", str(data.D))
+    telemetry.set_value("PIDV", str(data.PID))
 
-    telemetry.set_value("Error", [times, errors])
-    telemetry.fit_axis_data("ETime")
-    telemetry.set_axis_limits("E", -15, 15)
-
-    telemetry.set_value("Servo", [times, angles])
-    telemetry.fit_axis_data("STime")
-    telemetry.set_axis_limits("S", 0, 130)
-
-    telemetry.set_value("Pro", [times, P_Values])
-    telemetry.fit_axis_data("PTime")
-    telemetry.fit_axis_data("P")
-
-    telemetry.set_value("Der", [times, D_Values])
-    telemetry.fit_axis_data("dtTime")
-    telemetry.fit_axis_data("dt")
-
-    telemetry.set_value("Int", [times, I_Values])
-    telemetry.fit_axis_data("ITime")
-    telemetry.fit_axis_data("I")
-
-    telemetry.set_value("pid", [times, PID_Values])
-    telemetry.fit_axis_data("PIDTime")
-    telemetry.fit_axis_data("PID")
-
-    telemetry.set_value("DistanceV", str(dist) + "cm")
-    telemetry.set_value("ErrorV", str(error) + "cm")
-    telemetry.set_value("AngleV", str(servo))
-    telemetry.set_value("PV", str(P))
-    telemetry.set_value("IV", str(I))
-    telemetry.set_value("DV", str(D))
-    telemetry.set_value("PIDV", str(PID))
-
-    telemetry.set_value("Kp", str(Kp))
-    telemetry.set_value("Ki", str(Ki))
-    telemetry.set_value("Kd", str(Kd))
-    telemetry.set_value("SetPoint", str(SetPoint))
+    telemetry.set_value("Kp", str(data.Kp))
+    telemetry.set_value("Ki", str(data.Ki))
+    telemetry.set_value("Kd", str(data.Kd))
+    telemetry.set_value("SetPoint", str(data.SetPoint))
 
     telemetry.render_dearpygui_frame()
-
 
 telemetry.destroy_context()
