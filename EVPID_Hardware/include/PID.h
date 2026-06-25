@@ -7,6 +7,7 @@ class PID
 {
     private:
         float Kp, ki, kd;
+        float P, I, D;
         float setPoint;
         float previousError;
         float integral;
@@ -16,6 +17,9 @@ class PID
         void begin();
         float compute(float currentValue);
         float getError();
+        float getP();
+        float getI();
+        float getD();
     
 };
 

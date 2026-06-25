@@ -34,11 +34,30 @@ float PID::compute(float currentValue)
     float derivative = (error - previousError) / dt;
     previousError = error;
 
-    float output = (Kp * error) + (ki * integral) + (kd * derivative);
+    P = (Kp * error);
+    I = (ki * integral);
+    D = (kd * derivative);
+
+    float output = P + I + D;
     return output;
 }
 
 float PID::getError()
 {
     return previousError;
+}
+
+float PID::getP()
+{
+    return P;
+}
+
+float PID::getI()
+{
+    return I;
+}
+
+float PID::getD()
+{
+    return D;
 }

@@ -44,7 +44,19 @@ void loop()
   Serial.print(servoAngle);
   Serial.print(",");
 
-  Serial.println(millis()/1000.0);
+  Serial.print(millis()/1000.0);
+  Serial.print(",");
+
+  Serial.print(pid.getP());
+  Serial.print(",");
+
+  Serial.print(pid.getI());
+  Serial.print(",");
+
+  Serial.print(pid.getD());
+  Serial.print(",");
+
+  Serial.println(output);
 
   delay(75);
 }
