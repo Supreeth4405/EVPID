@@ -34,14 +34,17 @@ void loop()
 
   servo.write(servoAngle);
 
-  Serial.print("Dist=");
+
   Serial.print(distance);
+  Serial.print(",");
 
-  Serial.print(" Error=");
   Serial.print(pid.getError());
+  Serial.print(",");
 
-  Serial.print(" Servo=");
-  Serial.println(servoAngle);
+  Serial.print(servoAngle);
+  Serial.print(",");
+
+  Serial.println(millis()/1000.0);
 
   delay(75);
 }
