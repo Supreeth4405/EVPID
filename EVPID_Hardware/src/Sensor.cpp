@@ -35,11 +35,11 @@ float Sensor::getFilteredDistance()
 {
   float sum = 0;
 
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < 5; i++)
   {
     sum += getDistance();
     delay(5);
   }
 
-  return sum / 3.0;
+  return sum / 5.0;
 }

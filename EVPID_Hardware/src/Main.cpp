@@ -56,7 +56,19 @@ void loop()
   Serial.print(pid.getD());
   Serial.print(",");
 
-  Serial.println(output);
+  Serial.print(output);
+  Serial.print(",");
 
-  delay(75);
+  Serial.print(pid.getkp());
+  Serial.print(",");
+
+  Serial.print(pid.getki());
+  Serial.print(",");
+
+  Serial.print(pid.getkd());
+  Serial.print(",");
+
+  Serial.println(pid.SetPoint());
+
+  delay(50);
 }

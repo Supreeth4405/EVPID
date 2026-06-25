@@ -20,6 +20,10 @@ class PID
         float getP();
         float getI();
         float getD();
+        float getkp();
+        float getki();
+        float getkd();
+        float SetPoint();
     
 };
 

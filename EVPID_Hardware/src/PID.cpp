@@ -61,3 +61,23 @@ float PID::getD()
 {
     return D;
 }
+
+float PID::getkp()
+{
+    return Kp;
+}
+
+float PID::getki()
+{
+    return ki;
+}
+
+float PID::getkd()
+{
+    return kd;
+}
+
+float PID::SetPoint()
+{
+    return setPoint;
+}
