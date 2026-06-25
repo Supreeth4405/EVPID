@@ -1,6 +1,16 @@
 import dearpygui.dearpygui as telemetry
 from DAQ import DAQ
 import Dashboard
+import CSV_Logger
+
+def Toggle_Logging(sender, app_data):
+    if data.Is_Logging:
+        data.Stop_Logging()
+        CSV_Logger.Save_CSV(data)
+        telemetry.set_item_label("LogButton", "Start Logging")
+    else:
+        data.Start_Logging()
+        telemetry.set_item_label("LogButton", "Stop Logging")
 
 data = DAQ("COM5", 9600)
 
@@ -47,6 +57,9 @@ with telemetry.window(label="EVPID_Telemetry", no_title_bar=True):
                 Dashboard.Create_Child_window(101.5, 114.3, "Ki", 10, "Ki", "0.63")
                 Dashboard.Create_Child_window(101.5, 114.3, "Kd", 10, "Kd", "0.45")
                 Dashboard.Create_Child_window(101.5, 114.3, "SetPoint", 10, "SetPoint", "15.0")
+
+            with telemetry.group(horizontal=True):
+                telemetry.add_button(label="Start Logging", tag="LogButton", callback=Toggle_Logging)
 
 telemetry.create_viewport(title="EVPID", width=1500, height=1320)
 telemetry.setup_dearpygui()

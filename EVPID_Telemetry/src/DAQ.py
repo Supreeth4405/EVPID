@@ -30,6 +30,17 @@ class DAQ:
         self.D_Values = []
         self.PID_Values = []
 
+        self.Is_Logging = False
+
+        self.log_dists = []
+        self.log_errors = []
+        self.log_angles = []
+        self.log_times = []
+
+        self.log_P_Values = []
+        self.log_I_Values = []
+        self.log_D_Values = []
+        self.log_PID_Values = []
     
     def get_values(self):
         values = self.data.readline().decode("UTF-8").strip().split(",")
@@ -49,7 +60,6 @@ class DAQ:
         self.Kd = float(values[10])
         self.SetPoint = float(values[11])
 
-
         self.dists.append(self.dist)
         self.errors.append(self.error)
         self.angles.append(self.angle)
@@ -60,6 +70,16 @@ class DAQ:
         self.D_Values.append(self.D)
         self.PID_Values.append(self.PID)
 
+        if self.Is_Logging == True:
+            self.log_dists.append(self.dist)
+            self.log_errors.append(self.error)
+            self.log_angles.append(self.angle)
+            self.log_times.append(self.time)
+
+            self.log_P_Values.append(self.P)
+            self.log_I_Values.append(self.I)
+            self.log_D_Values.append(self.D)
+            self.log_PID_Values.append(self.PID)
 
         self.dists = self.dists[-100:]
         self.errors = self.errors[-100:]
@@ -70,3 +90,19 @@ class DAQ:
         self.I_Values = self.I_Values[-100:]
         self.D_Values = self.D_Values[-100:]
         self.PID_Values = self.PID_Values[-100:]
+
+    def Start_Logging(self):
+        self.Is_Logging = True
+
+        self.log_dists.clear()
+        self.log_errors.clear()
+        self.log_angles.clear()
+        self.log_times.clear()
+
+        self.log_P_Values.clear()
+        self.log_I_Values.clear()
+        self.log_D_Values.clear()
+        self.log_PID_Values.clear()
+
+    def Stop_Logging(self):
+        self.Is_Logging = False
