@@ -16,7 +16,12 @@ const int SERVO_MIN = 0;
 const int SERVO_MAX = 130;
 const int SERVO_CENTER = 65;
 
-void Update_Gains();
+bool PID_Control = false;
+
+int servoAngle = SERVO_CENTER;
+float output = 0;
+
+void Update_New_Values();
 
 void setup()
 {
@@ -31,13 +36,16 @@ void setup()
 
 void loop()
 {
+  Update_New_Values();
   float distance = sensor.getFilteredDistance();
-  Update_Gains();
-  float output = pid.compute(distance);
-  int servoAngle = SERVO_CENTER - output;
-  servoAngle = constrain(servoAngle, SERVO_MIN, SERVO_MAX);
-  servo.write(servoAngle);
 
+  if (PID_Control)
+  {
+    output = pid.compute(distance);
+    servoAngle = SERVO_CENTER - output;
+    servoAngle = constrain(servoAngle, SERVO_MIN, SERVO_MAX);
+    servo.write(servoAngle);
+  }
 
   Serial.print(distance);
   Serial.print(",");
@@ -77,7 +85,7 @@ void loop()
   delay(50);
 }
 
-void Update_Gains()
+void Update_New_Values()
 {
   if (Serial.available())
   {
@@ -106,5 +114,25 @@ void Update_Gains()
       SetPoint = msg.substring(3).toFloat();
       pid.Update_SP(SetPoint);
     }
+
+    if (msg == "SERVO_OFF")
+    {
+      servo.detach();
+    }
+    else if (msg == "SERVO_ON")
+    {
+      servo.attach(9);
+      servo.write(SERVO_CENTER);
+    }
+
+    if (msg == "PID_OFF")
+    {
+      PID_Control = false;
+    }
+    else if (msg == "PID_ON")
+    {
+      PID_Control = true;
+    }
+    
   }
 }

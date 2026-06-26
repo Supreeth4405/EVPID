@@ -3,15 +3,19 @@ from DAQ import DAQ
 import Dashboard
 import CSV_Logger
 
+Servo_Active = True
+PID_Active = False
+
 def Toggle_Logging(sender, app_data):
     if logger.Is_Logging:
         logger.Stop_Logging()
         logger.Save_CSV(data)
         telemetry.set_item_label("LogButton", "Start Logging")
+        telemetry.set_value("_Log", "Not Logging")
     else:
         logger.Start_Logging(data)
         telemetry.set_item_label("LogButton", "Stop Logging")
-
+        telemetry.set_value("_Log", "Logging")
 
 def Apply_Kp():
     kp = telemetry.get_value("KpInput")
@@ -30,15 +34,46 @@ def Apply_SP():
     data.data.write(("SP:" + str(SP) + "\n").encode())
 
 def Toggle_PID():
-    print()
+    global PID_Active
+    if PID_Active:
+        data.data.write(("PID_OFF\n").encode())
+        telemetry.set_value("_PID", "OFFLINE")
+        PID_Active = False
+    else:
+        data.data.write(("PID_ON\n").encode())
+        telemetry.set_value("_PID", "ACTIVE")
+        PID_Active = True
 
 def Toggle_Servo():
-    print()
+    global Servo_Active
+    if Servo_Active:
+        data.data.write(("SERVO_OFF\n").encode())
+        telemetry.set_value("_Servo", "OFFLINE")
+        Servo_Active = False
+    else:
+        data.data.write(("SERVO_ON\n").encode())
+        telemetry.set_value("_Servo", "ACTIVE")
+        Servo_Active = True
 
 def Connect_COM():
-    print()
+    global data
 
-data = DAQ("COM5", 9600)
+    if data is None:
+        try:
+            data = DAQ("COM5", 9600)
+            data.Clean_Lists()
+
+            telemetry.set_value("_Connect", "Connected")
+            telemetry.set_item_label("ConnectButton", "Disconnect")
+        except:
+            telemetry.set_value("_Connect", "Failed")
+    else:
+        data.data.close()
+        data = None
+        telemetry.set_value("_Connect", "Disconnected")
+        telemetry.set_item_label("ConnectButton", "Connect")
+
+data = None
 logger = CSV_Logger.Log_CSV()
 
 telemetry.create_context()
@@ -98,10 +133,10 @@ with telemetry.window(label="EVPID_Telemetry", no_title_bar=True):
                 telemetry.add_button(width=101.5, height=44, label="Apply SP", tag="SPButton", callback=Apply_SP)
 
             with telemetry.group(horizontal=True):
-                Dashboard.Create_Child_Window_Small(101.5, 54.5, "Logging", "_Log")
-                Dashboard.Create_Child_Window_Small(101.5, 54.5, "Active", "_PID")
-                Dashboard.Create_Child_Window_Small(101.5, 54.5, "Active", "_Servo")
-                Dashboard.Create_Child_Window_Small(101.5, 54.5, "Active", "_Connect")
+                Dashboard.Create_Child_Window_Small(101.5, 54.5, "Not Logging", "_Log")
+                Dashboard.Create_Child_Window_Small(101.5, 54.5, "OFFLINE", "_PID")
+                Dashboard.Create_Child_Window_Small(101.5, 54.5, "ACTIVE", "_Servo")
+                Dashboard.Create_Child_Window_Small(101.5, 54.5, "Disconnected", "_Connect")
 
             with telemetry.group(horizontal=True):
                 telemetry.add_button(width=101.5, height=54.5, label="Start Logging", tag="LogButton", callback=Toggle_Logging)
@@ -116,26 +151,33 @@ telemetry.show_viewport()
 telemetry.toggle_viewport_fullscreen()
 
 while telemetry.is_dearpygui_running():
-    data.get_values()
-    logger.Logging(data)
+    if data is not None:
+        try:
+            data.get_values()
+            logger.Logging(data)
 
-    Dashboard.Show_Limit_Graph("DTime", "D", "Distance", data.times, data.dists, 30, 0)
-    Dashboard.Show_Limit_Graph("ETime", "E", "Error", data.times, data.errors, 15, -15)
-    Dashboard.Show_Limit_Graph("STime", "S", "Servo", data.times, data.angles, 140, 0)
+            Dashboard.Show_Limit_Graph("DTime", "D", "Distance", data.times, data.dists, 30, 0)
+            Dashboard.Show_Limit_Graph("ETime", "E", "Error", data.times, data.errors, 15, -15)
+            Dashboard.Show_Limit_Graph("STime", "S", "Servo", data.times, data.angles, 140, 0)
 
-    Dashboard.Show_Graph("PTime", "P", "Pro", data.times, data.P_Values)
-    Dashboard.Show_Graph("ITime", "I", "Int", data.times, data.I_Values)
-    Dashboard.Show_Graph("dtTime", "dt", "Der", data.times, data.D_Values)
-    Dashboard.Show_Graph("PIDTime", "PID", "pid", data.times, data.PID_Values)
+            Dashboard.Show_Graph("PTime", "P", "Pro", data.times, data.P_Values)
+            Dashboard.Show_Graph("ITime", "I", "Int", data.times, data.I_Values)
+            Dashboard.Show_Graph("dtTime", "dt", "Der", data.times, data.D_Values)
+            Dashboard.Show_Graph("PIDTime", "PID", "pid", data.times, data.PID_Values)
 
-    telemetry.set_value("DistanceV", str(data.dist) + "cm")
-    telemetry.set_value("ErrorV", str(data.error) + "cm")
-    telemetry.set_value("AngleV", str(data.angle))
+            telemetry.set_value("DistanceV", str(data.dist) + "cm")
+            telemetry.set_value("ErrorV", str(data.error) + "cm")
+            telemetry.set_value("AngleV", str(data.angle))
 
-    telemetry.set_value("PV", str(data.P))
-    telemetry.set_value("IV", str(data.I))
-    telemetry.set_value("DV", str(data.D))
-    telemetry.set_value("PIDV", str(data.PID))
+            telemetry.set_value("PV", str(data.P))
+            telemetry.set_value("IV", str(data.I))
+            telemetry.set_value("DV", str(data.D))
+            telemetry.set_value("PIDV", str(data.PID))
+        except:
+            data.data.close()
+            data = None
+            telemetry.set_value("_Connect", "Disconnected")
+            telemetry.set_item_label("ConnectButton", "Connect")
 
     telemetry.render_dearpygui_frame()
 

@@ -29,6 +29,17 @@ class DAQ:
         self.I_Values = []
         self.D_Values = []
         self.PID_Values = []
+
+    def Clean_Lists(self):
+        self.dists.clear()
+        self.errors.clear()
+        self.angles.clear()
+        self.times.clear()
+
+        self.P_Values.clear()
+        self.I_Values.clear()
+        self.D_Values.clear()
+        self.PID_Values.clear()
     
     def get_values(self):
         values = self.data.readline().decode("UTF-8").strip().split(",")
