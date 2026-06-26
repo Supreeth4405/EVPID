@@ -2,6 +2,7 @@ import dearpygui.dearpygui as telemetry
 from DAQ import DAQ
 import Dashboard
 import CSV_Logger
+import Customisations
 
 Servo_Active = True
 PID_Active = False
@@ -77,6 +78,8 @@ data = None
 logger = CSV_Logger.Log_CSV()
 
 telemetry.create_context()
+Customisations.Apply_Theme()
+Customisations.Load_Fonts()
 
 with telemetry.window(label="EVPID_Telemetry", no_title_bar=True):
 

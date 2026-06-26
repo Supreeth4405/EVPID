@@ -64,7 +64,7 @@ class Log_CSV:
 
     def Save_CSV(self, data):
         Current_Time = datetime.now()
-        file_name = ("../EVPID_Log/EVPID_" + Current_Time.strftime("%d-%m-%y_%H-%M-%S") + ".csv")
+        file_name = ("EVPID_Log/EVPID_" + Current_Time.strftime("%d-%m-%y_%H-%M-%S") + ".csv")
         self.Calculate_Summary(data)
 
         with open(file_name, "w", newline="") as file:
