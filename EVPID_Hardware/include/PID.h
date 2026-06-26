@@ -6,7 +6,7 @@
 class PID
 {
     private:
-        float Kp, ki, kd;
+        float Kp, Ki, Kd;
         float P, I, D;
         float setPoint;
         float previousError;
@@ -24,7 +24,10 @@ class PID
         float getki();
         float getkd();
         float SetPoint();
-    
+        void Update_Kp(float Kp);
+        void Update_Ki(float Ki);
+        void Update_Kd(float Kd);
+        void Update_SP(float SetPoint);
 };
 
 #endif

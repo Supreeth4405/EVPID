@@ -22,3 +22,7 @@ def Create_Child_window(_Width, _Height, Label, Spacer, Tag, Default):
         telemetry.add_text(Label)
         telemetry.add_spacer(height=Spacer)
         telemetry.add_text(Default, tag=Tag)
+
+def Create_Child_Window_Small(_Width, _Height, Label, Tag):
+    with telemetry.child_window(width=_Width, height=_Height):
+        telemetry.add_text(Label, tag=Tag)

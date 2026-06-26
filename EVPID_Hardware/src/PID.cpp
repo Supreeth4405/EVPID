@@ -3,8 +3,8 @@
 PID::PID(float _Kp, float _Ki, float _Kd, float _setPoint)
 {
     Kp = _Kp;
-    ki = _Ki;
-    kd = _Kd;
+    Ki = _Ki;
+    Kd = _Kd;
     setPoint = _setPoint;
 }
 
@@ -35,8 +35,8 @@ float PID::compute(float currentValue)
     previousError = error;
 
     P = (Kp * error);
-    I = (ki * integral);
-    D = (kd * derivative);
+    I = (Ki * integral);
+    D = (Kd * derivative);
 
     float output = P + I + D;
     return output;
@@ -69,15 +69,35 @@ float PID::getkp()
 
 float PID::getki()
 {
-    return ki;
+    return Ki;
 }
 
 float PID::getkd()
 {
-    return kd;
+    return Kd;
 }
 
 float PID::SetPoint()
 {
     return setPoint;
+}
+
+void PID::Update_Kp(float _Kp)
+{
+    Kp = _Kp;
+}
+
+void PID::Update_Ki(float _Ki)
+{
+    Ki = _Ki;
+}
+
+void PID::Update_Kd(float _Kd)
+{
+    Kd = _Kd;
+}
+
+void PID::Update_SP(float _setPoint)
+{
+    setPoint = _setPoint;
 }

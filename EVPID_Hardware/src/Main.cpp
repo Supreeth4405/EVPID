@@ -3,13 +3,20 @@
 #include "Sensor.h"
 #include "PID.h"
 
+float Kp = 8;
+float Ki = 0.625;
+float Kd = 0.45;
+float SetPoint = 15.0;
+
 Servo servo;
 Sensor sensor(10, 11);
-PID pid(8.0, 0.625, 0.45, 15.0);
+PID pid(Kp, Ki, Kd, SetPoint);
 
 const int SERVO_MIN = 0;
 const int SERVO_MAX = 130;
 const int SERVO_CENTER = 65;
+
+void Update_Gains();
 
 void setup()
 {
@@ -25,13 +32,10 @@ void setup()
 void loop()
 {
   float distance = sensor.getFilteredDistance();
-
+  Update_Gains();
   float output = pid.compute(distance);
-
   int servoAngle = SERVO_CENTER - output;
-
   servoAngle = constrain(servoAngle, SERVO_MIN, SERVO_MAX);
-
   servo.write(servoAngle);
 
 
@@ -71,4 +75,36 @@ void loop()
   Serial.println(pid.SetPoint());
 
   delay(50);
+}
+
+void Update_Gains()
+{
+  if (Serial.available())
+  {
+    String msg = Serial.readStringUntil('\n');
+
+    if (msg.startsWith("Kp:"))
+    {
+      Kp = msg.substring(3).toFloat();
+      pid.Update_Kp(Kp);
+    }
+
+    if (msg.startsWith("Ki:"))
+    {
+      Ki = msg.substring(3).toFloat();
+      pid.Update_Ki(Ki);
+    }
+
+    if (msg.startsWith("Kd:"))
+    {
+      Kd = msg.substring(3).toFloat();
+      pid.Update_Kd(Kd);
+    }
+
+    if (msg.startsWith("SP:"))
+    {
+      SetPoint = msg.substring(3).toFloat();
+      pid.Update_SP(SetPoint);
+    }
+  }
 }
