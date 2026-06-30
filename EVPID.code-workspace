@@ -7,6 +7,15 @@
 		{
 			"name": "EVPID_Telemetry",
 			"path": "EVPID_Telemetry"
+		},
+		{
+			"path": "EVPID_Images"
+		},
+		{
+			"path": "EVPID_Log"
+		},
+		{
+			"path": "EVPID_Trials"
 		}
 	],
 	"settings": {}
